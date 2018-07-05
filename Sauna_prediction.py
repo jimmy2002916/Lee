@@ -18,7 +18,6 @@ staying = 'Staying'
 features = list(set(df.columns) - {label, 
                  'Name',
                  'Address',
-                 'Working',
                  'Age of Parent',
                  'Consuming Power',
                  'Beauty',
@@ -78,7 +77,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
 
 
-"""
+
 input_dim = len(X.columns)
 classifier = Sequential() # classifier is the future ann we r going to build
 classifier.add(Dense(units = 6, kernel_initializer = 'uniform', activation = 'relu', input_dim = input_dim))
@@ -87,7 +86,7 @@ classifier.add(Dense(units = 1, kernel_initializer = 'uniform', activation = 'si
 classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 classifier.fit(X_train, y_train, batch_size = 1, epochs = 25)
 
-
+"""
 classifier = GaussianNB()
 classifier = DecisionTreeClassifier(criterion = 'entropy', random_state = 0)
 classifier = RandomForestClassifier(n_estimators = 10, criterion = 'entropy', random_state = 0)
@@ -96,7 +95,6 @@ classifier = KNeighborsClassifier(n_neighbors = 5, metric = 'minkowski', p = 2)
 classifier = LogisticRegression(random_state = 0)
 """
 
-classifier = LogisticRegression(random_state = 0)
 
 classifier.fit(X_train, y_train) 
 y_pred = classifier.predict(X_test)
@@ -117,10 +115,94 @@ X_pred = X_pred.values #change pandas into numpy
 
 Sauna_prediction = []
 for i in X_pred[0:]:
-    new_prediction = classifier.predict(sc.transform(np.array([list(i)])))
-    new_prediction = (new_prediction > 0.5)
+    new_prediction = classifier.predict_proba(sc.transform(np.array([list(i)])))
+    #new_prediction = (new_prediction > 0.5)
     Sauna_prediction.append(new_prediction)
+#    Sauna_prediction.append(new_prediction[0][1])
 
 #%%
-df_pred['Sauna_prediction'] = Sauna_prediction
+df_pred['Sauna_prediction_Keras'] = Sauna_prediction
+
+
+
+#%% LR
+classifier = LogisticRegression(random_state = 0)
+classifier.fit(X_train, y_train) 
+y_pred = classifier.predict(X_test)
+
+# Making the Confusion Matrix(it is a function)
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, y_pred.round())
+
+df_pred = df_pred.loc[df_pred[staying].notnull()] # 我覺得staying 是個很強的特徵，先用它有值的資料來做預測 看看效果
+X_pred = df_pred[features] #metrics of features
+X_pred_df = X_pred
+
+X_pred = X_pred.values #change pandas into numpy
+
+Sauna_prediction = []
+for i in X_pred[0:]:
+    new_prediction = classifier.predict_proba(sc.transform(np.array([list(i)])))
+    #new_prediction = (new_prediction > 0.5)
+#    Sauna_prediction.append(new_prediction)
+    Sauna_prediction.append(new_prediction[0][1])
+
+df_pred['Sauna_prediction_LR'] = Sauna_prediction
+
+#%% Decision Tree
+
+classifier = RandomForestClassifier(n_estimators = 10, criterion = 'entropy', random_state = 0)
+
+classifier.fit(X_train, y_train) 
+y_pred = classifier.predict(X_test)
+
+# Making the Confusion Matrix(it is a function)
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, y_pred.round())
+
+df_pred = df_pred.loc[df_pred[staying].notnull()] # 我覺得staying 是個很強的特徵，先用它有值的資料來做預測 看看效果
+X_pred = df_pred[features] #metrics of features
+X_pred_df = X_pred
+
+X_pred = X_pred.values #change pandas into numpy
+
+Sauna_prediction = []
+for i in X_pred[0:]:
+    new_prediction = classifier.predict_proba(sc.transform(np.array([list(i)])))
+    #new_prediction = (new_prediction > 0.5)
+#    Sauna_prediction.append(new_prediction)
+    Sauna_prediction.append(new_prediction[0][1])
+
+df_pred['Sauna_prediction_RF'] = Sauna_prediction
+
+#%% KNN
+
+classifier = KNeighborsClassifier(n_neighbors = 5, metric = 'minkowski', p = 2)
+
+classifier.fit(X_train, y_train) 
+y_pred = classifier.predict(X_test)
+
+# Making the Confusion Matrix(it is a function)
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, y_pred.round())
+
+df_pred = df_pred.loc[df_pred[staying].notnull()] # 我覺得staying 是個很強的特徵，先用它有值的資料來做預測 看看效果
+X_pred = df_pred[features] #metrics of features
+X_pred_df = X_pred
+
+X_pred = X_pred.values #change pandas into numpy
+
+Sauna_prediction = []
+for i in X_pred[0:]:
+    new_prediction = classifier.predict_proba(sc.transform(np.array([list(i)])))
+    #new_prediction = (new_prediction > 0.5)
+#    Sauna_prediction.append(new_prediction)
+    Sauna_prediction.append(new_prediction[0][1])
+
+df_pred['Sauna_prediction_KNN'] = Sauna_prediction
+
+
+#%%
 df_pred.to_excel('Result_Sauna_prediction.xlsx')
+
+

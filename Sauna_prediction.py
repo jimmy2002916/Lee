@@ -26,7 +26,8 @@ features = list(set(df.columns) - {label,
                  'Massage',
                  'Resource',
                  'Birth Date',
-                 'Register Date'
+                 'Register Date',
+                 'Get into Art Class'
                  })
 
 #%%
@@ -122,4 +123,4 @@ for i in X_pred[0:]:
 
 #%%
 df_pred['Sauna_prediction'] = Sauna_prediction
-df_pred.to_excel('Sauna_prediction.xlsx')
+df_pred.to_excel('Result_Sauna_prediction.xlsx')

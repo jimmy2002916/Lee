@@ -46,7 +46,7 @@ df['Sex'] = X_0.fit_transform(df['Sex'])
 #df['Register Date'] = pd.to_datetime(df['Register Date'])
 df = df.loc[df[staying].notnull()] # 我覺得staying 是個很強的特徵，先用它有值的資料來做預測 看看效果
 df_staying_notnull = df
-df = df.loc[df[label].notnull() ] # 要預測的 label
+df = df.loc[df[label].notnull() ] # 要預測的label
 X = df[features] #metrics of features
 y = df[label].values # independent variable vector(outcome) #Label Column
 
